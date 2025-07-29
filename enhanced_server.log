@@ -1,0 +1,33 @@
+INFO:__main__:Initializing models...
+INFO:__main__:Loading GPT-2 model...
+INFO:__main__:GPT-2 model loaded successfully
+INFO:__main__:✅ GPT-2 set as default model
+INFO:__main__:Loading Code Llama model...
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:29<00:29, 29.16s/it]Loading checkpoint shards: 100%|██████████| 2/2 [01:01<00:00, 31.11s/it]Loading checkpoint shards: 100%|██████████| 2/2 [01:01<00:00, 30.82s/it]
+/Users/thomasnoer/Documents/DraculaModel/dracula_env/lib/python3.13/site-packages/bitsandbytes/cextension.py:34: UserWarning: The installed version of bitsandbytes was compiled without GPU support. 8-bit optimizers, 8-bit multiplication, and GPU quantization are unavailable.
+  warn("The installed version of bitsandbytes was compiled without GPU support. "
+INFO:__main__:Code Llama model loaded successfully
+INFO:__main__:✅ Code Llama set as default model
+INFO:__main__:🎉 Initialized with 2 models
+INFO:__main__:Starting enhanced Flask application...
+'NoneType' object has no attribute 'cadam32bit_grad_fp32'
+ * Serving Flask app 'app_enhanced'
+ * Debug mode: off
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://192.168.8.136:8080
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2025 18:01:21] "GET /models HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2025 18:02:13] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2025 18:02:13] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2025 18:02:13] "GET /models HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2025 18:02:22] "GET /models HTTP/1.1" 200 -
+INFO:__main__:Switched to model: GPT-2 Fine-tuned
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2025 18:02:28] "POST /switch_model HTTP/1.1" 200 -
+INFO:__main__:Generating with GPT-2 Fine-tuned - prompt: 'My dear friend, I must tell you of the most peculi...', length: 200, temp: 0.8
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2025 18:02:57] "POST /generate HTTP/1.1" 200 -
+INFO:__main__:Switched to model: Code Llama + LoRA
+INFO:werkzeug:127.0.0.1 - - [29/Jul/2025 18:05:09] "POST /switch_model HTTP/1.1" 200 -
+INFO:__main__:Generating with Code Llama + LoRA - prompt: 'My dear friend, I must tell you of the most peculi...', length: 200, temp: 0.8
+The attention mask is not set and cannot be inferred from input because pad token is same as eos token. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.

@@ -6,3 +6,10 @@ tokenizers>=0.13.0
 tqdm>=4.64.0
 numpy>=1.21.0
 flask>=2.3.0
+
+# Llama 2 + LoRA dependencies
+peft>=0.4.0
+bitsandbytes>=0.41.0
+scipy>=1.9.0
+sentencepiece>=0.1.97
+protobuf>=3.20.0

@@ -1,0 +1,62 @@
+INFO:__main__:Starting ultra memory-efficient Code Llama training...
+INFO:__main__:💡 Using minimal settings to fit in available memory
+INFO:__main__:Loading codellama/CodeLlama-7b-hf with minimal memory settings...
+🦙 === Code Llama 7B + LoRA (Ultra Minimal) ===
+💻 Minimal memory configuration for Mac systems
+📊 Reduced dataset and parameters to fit in 16GB
+💾 Memory usage: ~8-12GB RAM
+⏰ Training time: ~30-60 minutes
+🎯 Quality: Good results with memory constraints
+
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:28<00:28, 28.95s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:51<00:00, 25.31s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:51<00:00, 25.86s/it]
+/Users/thomasnoer/Documents/DraculaModel/dracula_env/lib/python3.13/site-packages/bitsandbytes/cextension.py:34: UserWarning: The installed version of bitsandbytes was compiled without GPU support. 8-bit optimizers, 8-bit multiplication, and GPU quantization are unavailable.
+  warn("The installed version of bitsandbytes was compiled without GPU support. "
+INFO:__main__:Loading chunks from dracula_chunks.txt...
+INFO:__main__:Loaded 50 text chunks (limited for memory)
+'NoneType' object has no attribute 'cadam32bit_grad_fp32'
+trainable params: 2,097,152 || all params: 6,740,643,840 || trainable%: 0.0311
+Preparing texts:   0%|          | 0/50 [00:00<?, ?it/s]Preparing texts: 100%|██████████| 50/50 [00:00<00:00, 247597.64it/s]
+INFO:__main__:Prepared 50 training texts
+INFO:__main__:Tokenizing texts...
+Tokenizing:   0%|          | 0/50 [00:00<?, ?it/s]Tokenizing:   2%|▏         | 1/50 [00:00<00:06,  7.88it/s]Tokenizing: 100%|██████████| 50/50 [00:00<00:00, 366.85it/s]
+INFO:__main__:Created 50 tokenized training examples
+No label_names provided for model class `PeftModelForCausalLM`. Since `PeftModel` hides base models input arguments, if label_names is not given, label_names can't be set automatically within `Trainer`. Note that empty label_names list will be used instead.
+INFO:__main__:Starting minimal LoRA fine-tuning...
+  0%|          | 0/50 [00:00<?, ?it/s]  2%|▏         | 1/50 [04:37<3:46:21, 277.17s/it]  4%|▍         | 2/50 [07:51<3:02:49, 228.54s/it]                                                   4%|▍         | 2/50 [07:51<3:02:49, 228.54s/it]  6%|▌         | 3/50 [11:15<2:50:04, 217.13s/it]  8%|▊         | 4/50 [14:21<2:37:10, 205.00s/it]                                                   8%|▊         | 4/50 [14:21<2:37:10, 205.00s/it] 10%|█         | 5/50 [17:40<2:32:02, 202.72s/it] 12%|█▏        | 6/50 [21:00<2:28:04, 201.93s/it]                                                  12%|█▏        | 6/50 [21:00<2:28:04, 201.93s/it] 14%|█▍        | 7/50 [24:05<2:20:35, 196.18s/it] 16%|█▌        | 8/50 [27:10<2:14:59, 192.84s/it]                                                  16%|█▌        | 8/50 [27:10<2:14:59, 192.84s/it] 18%|█▊        | 9/50 [30:12<2:09:27, 189.45s/it] 20%|██        | 10/50 [33:13<2:04:26, 186.67s/it]                                                   20%|██        | 10/50 [33:13<2:04:26, 186.67s/it] 22%|██▏       | 11/50 [36:48<2:06:57, 195.33s/it] 24%|██▍       | 12/50 [39:57<2:02:37, 193.63s/it]                                                   24%|██▍       | 12/50 [39:57<2:02:37, 193.63s/it] 26%|██▌       | 13/50 [42:53<1:55:58, 188.08s/it] 28%|██▊       | 14/50 [45:52<1:51:16, 185.45s/it]                                                   28%|██▊       | 14/50 [45:52<1:51:16, 185.45s/it] 30%|███       | 15/50 [48:54<1:47:29, 184.28s/it] 32%|███▏      | 16/50 [51:55<1:43:51, 183.27s/it]                                                   32%|███▏      | 16/50 [51:55<1:43:51, 183.27s/it] 34%|███▍      | 17/50 [54:50<1:39:28, 180.88s/it] 36%|███▌      | 18/50 [57:56<1:37:22, 182.58s/it]                                                   36%|███▌      | 18/50 [57:56<1:37:22, 182.58s/it] 38%|███▊      | 19/50 [1:01:03<1:35:00, 183.90s/it] 40%|████      | 20/50 [1:04:15<1:33:02, 186.08s/it]                                                     40%|████      | 20/50 [1:04:15<1:33:02, 186.08s/it] 42%|████▏     | 21/50 [1:07:24<1:30:28, 187.21s/it] 44%|████▍     | 22/50 [1:10:25<1:26:23, 185.11s/it]                                                     44%|████▍     | 22/50 [1:10:25<1:26:23, 185.11s/it] 46%|████▌     | 23/50 [1:13:27<1:22:57, 184.35s/it] 48%|████▊     | 24/50 [1:17:18<1:25:52, 198.17s/it]                                                     48%|████▊     | 24/50 [1:17:18<1:25:52, 198.17s/it] 50%|█████     | 25/50 [1:20:32<1:22:06, 197.05s/it] 52%|█████▏    | 26/50 [1:23:44<1:18:11, 195.48s/it]                                                     52%|█████▏    | 26/50 [1:23:44<1:18:11, 195.48s/it] 54%|█████▍    | 27/50 [1:26:57<1:14:37, 194.69s/it] 56%|█████▌    | 28/50 [1:30:03<1:10:25, 192.07s/it]                                                     56%|█████▌    | 28/50 [1:30:03<1:10:25, 192.07s/it] 58%|█████▊    | 29/50 [1:33:24<1:08:12, 194.90s/it] 60%|██████    | 30/50 [1:36:49<1:05:56, 197.84s/it]                                                     60%|██████    | 30/50 [1:36:49<1:05:56, 197.84s/it] 62%|██████▏   | 31/50 [1:39:45<1:00:36, 191.39s/it] 64%|██████▍   | 32/50 [1:42:40<55:53, 186.29s/it]                                                     64%|██████▍   | 32/50 [1:42:40<55:53, 186.29s/it] 66%|██████▌   | 33/50 [1:45:31<51:31, 181.83s/it] 68%|██████▊   | 34/50 [1:48:28<48:06, 180.38s/it]                                                   68%|██████▊   | 34/50 [1:48:28<48:06, 180.38s/it] 70%|███████   | 35/50 [1:51:31<45:18, 181.23s/it] 72%|███████▏  | 36/50 [1:54:27<41:53, 179.52s/it]                                                   72%|███████▏  | 36/50 [1:54:27<41:53, 179.52s/it] 74%|███████▍  | 37/50 [1:57:25<38:50, 179.26s/it] 76%|███████▌  | 38/50 [2:00:56<37:42, 188.57s/it]                                                   76%|███████▌  | 38/50 [2:00:56<37:42, 188.57s/it] 78%|███████▊  | 39/50 [2:04:28<35:51, 195.57s/it] 80%|████████  | 40/50 [2:08:11<34:00, 204.05s/it]                                                   80%|████████  | 40/50 [2:08:11<34:00, 204.05s/it] 82%|████████▏ | 41/50 [2:11:53<31:24, 209.36s/it] 84%|████████▍ | 42/50 [2:15:28<28:08, 211.02s/it]                                                   84%|████████▍ | 42/50 [2:15:28<28:08, 211.02s/it] 86%|████████▌ | 43/50 [2:18:53<24:24, 209.27s/it] 88%|████████▊ | 44/50 [2:22:03<20:21, 203.54s/it]                                                   88%|████████▊ | 44/50 [2:22:03<20:21, 203.54s/it] 90%|█████████ | 45/50 [2:25:09<16:30, 198.15s/it] 92%|█████████▏| 46/50 [2:28:29<13:15, 198.80s/it]                                                   92%|█████████▏| 46/50 [2:28:29<13:15, 198.80s/it] 94%|█████████▍| 47/50 [2:31:35<09:44, 194.90s/it] 96%|█████████▌| 48/50 [2:34:42<06:25, 192.52s/it]                                                   96%|█████████▌| 48/50 [2:34:42<06:25, 192.52s/it] 98%|█████████▊| 49/50 [2:37:54<03:12, 192.43s/it]100%|██████████| 50/50 [2:41:03<00:00, 191.18s/it]                                                  100%|██████████| 50/50 [2:41:03<00:00, 191.18s/it]                                                  100%|██████████| 50/50 [2:41:04<00:00, 191.18s/it]100%|██████████| 50/50 [2:41:04<00:00, 193.29s/it]
+INFO:__main__:Saving LoRA adapter to stoker-codellama-lora
+INFO:__main__:Minimal Code Llama training complete!
+{'loss': 3.159, 'grad_norm': 0.2901689112186432, 'learning_rate': 0.00025, 'epoch': 0.04}
+{'loss': 3.2027, 'grad_norm': 0.4506271481513977, 'learning_rate': 0.0004895833333333333, 'epoch': 0.08}
+{'loss': 3.2566, 'grad_norm': 0.511039674282074, 'learning_rate': 0.00046875, 'epoch': 0.12}
+{'loss': 2.3038, 'grad_norm': 0.6508312225341797, 'learning_rate': 0.0004479166666666667, 'epoch': 0.16}
+{'loss': 2.9312, 'grad_norm': 1.0139050483703613, 'learning_rate': 0.0004270833333333333, 'epoch': 0.2}
+{'loss': 3.2099, 'grad_norm': 1.0496368408203125, 'learning_rate': 0.00040625000000000004, 'epoch': 0.24}
+{'loss': 2.5217, 'grad_norm': 1.254243016242981, 'learning_rate': 0.0003854166666666667, 'epoch': 0.28}
+{'loss': 2.7843, 'grad_norm': 2.234097480773926, 'learning_rate': 0.0003645833333333333, 'epoch': 0.32}
+{'loss': 2.8854, 'grad_norm': 1.1729415655136108, 'learning_rate': 0.00034375, 'epoch': 0.36}
+{'loss': 2.901, 'grad_norm': 0.9846979379653931, 'learning_rate': 0.0003229166666666667, 'epoch': 0.4}
+{'loss': 2.8364, 'grad_norm': 1.4828994274139404, 'learning_rate': 0.0003020833333333333, 'epoch': 0.44}
+{'loss': 2.7363, 'grad_norm': 1.1135532855987549, 'learning_rate': 0.00028125000000000003, 'epoch': 0.48}
+{'loss': 2.793, 'grad_norm': 1.0429280996322632, 'learning_rate': 0.0002604166666666667, 'epoch': 0.52}
+{'loss': 2.9158, 'grad_norm': 1.0059738159179688, 'learning_rate': 0.00023958333333333335, 'epoch': 0.56}
+{'loss': 2.6356, 'grad_norm': 1.0256330966949463, 'learning_rate': 0.00021875, 'epoch': 0.6}
+{'loss': 2.8042, 'grad_norm': 1.1579874753952026, 'learning_rate': 0.00019791666666666666, 'epoch': 0.64}
+{'loss': 2.5487, 'grad_norm': 1.1406097412109375, 'learning_rate': 0.00017708333333333335, 'epoch': 0.68}
+{'loss': 2.706, 'grad_norm': 1.3145724534988403, 'learning_rate': 0.00015625, 'epoch': 0.72}
+{'loss': 2.9233, 'grad_norm': 1.3868541717529297, 'learning_rate': 0.00013541666666666666, 'epoch': 0.76}
+{'loss': 2.8274, 'grad_norm': 1.5766507387161255, 'learning_rate': 0.00011458333333333333, 'epoch': 0.8}
+{'loss': 2.3138, 'grad_norm': 1.1600505113601685, 'learning_rate': 9.375e-05, 'epoch': 0.84}
+{'loss': 2.8539, 'grad_norm': 1.596494197845459, 'learning_rate': 7.291666666666667e-05, 'epoch': 0.88}
+{'loss': 2.4107, 'grad_norm': 1.3991831541061401, 'learning_rate': 5.208333333333334e-05, 'epoch': 0.92}
+{'loss': 2.8521, 'grad_norm': 1.3713973760604858, 'learning_rate': 3.125e-05, 'epoch': 0.96}
+{'loss': 3.0095, 'grad_norm': 1.252273440361023, 'learning_rate': 1.0416666666666666e-05, 'epoch': 1.0}
+{'train_runtime': 9664.329, 'train_samples_per_second': 0.005, 'train_steps_per_second': 0.005, 'train_loss': 2.812892017364502, 'epoch': 1.0}
+
+🎉 Minimal Code Llama training completed successfully!
+🌐 To use the web interface: python app_llama2.py
+💻 To test generation: python generate_llama2_style.py --lora_path stoker-codellama-lora --base_model codellama/CodeLlama-7b-hf
+
+📈 Even with minimal training, you should see:
+• Better text coherence than GPT-2
+• More authentic Gothic style
+• Better instruction following

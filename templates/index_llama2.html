@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bram Stoker Style Text Generator - Enhanced</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">🧛 Bram Stoker Style Generator</h1>
+            <p class="subtitle">Generate Gothic prose in the style of the master of Victorian horror</p>
+            <div class="model-info">
+                <span id="model-indicator" class="model-badge">🔄 Loading...</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="prompt">Enter your prompt:</label>
+                    <textarea id="prompt" placeholder="The ancient castle stood upon..." rows="3"></textarea>
+                    <small class="hint">Start your Gothic tale, or leave empty for random generation</small>
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="max-length">Length: <span id="length-value">200</span> words</label>
+                        <input type="range" id="max-length" min="50" max="400" value="200" step="25">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="temperature">Creativity: <span id="temp-value">0.8</span></label>
+                        <input type="range" id="temperature" min="0.3" max="1.2" value="0.8" step="0.1">
+                        <small class="temp-hint">Lower = more conservative, Higher = more creative</small>
+                    </div>
+                </div>
+
+                <button id="generate-btn" class="generate-btn">
+                    <span class="btn-text">Summon the Words</span>
+                    <span class="btn-loading" style="display: none;">Channeling Stoker's Spirit...</span>
+                </button>
+            </div>
+
+            <div class="output-section">
+                <div class="output-header">
+                    <h3>Generated Text</h3>
+                    <div class="header-actions">
+                        <span id="generation-info" class="generation-info"></span>
+                        <button id="copy-btn" class="copy-btn" style="display: none;">📋 Copy</button>
+                    </div>
+                </div>
+                <div id="output" class="output-text">
+                    <p class="placeholder">Your Gothic prose will appear here...</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Enhanced with Llama 2 + LoRA • Trained on Bram Stoker's <em>Dracula</em></p>
+            <p class="disclaimer">Generated text is AI-created fiction inspired by public domain literature</p>
+        </footer>
+    </div>
+
+    <script>
+        let currentModelType = 'unknown';
+
+        // Update slider values
+        document.getElementById('max-length').addEventListener('input', function(e) {
+            document.getElementById('length-value').textContent = e.target.value;
+        });
+
+        document.getElementById('temperature').addEventListener('input', function(e) {
+            document.getElementById('temp-value').textContent = parseFloat(e.target.value).toFixed(1);
+        });
+
+        // Update model indicator
+        function updateModelIndicator(modelType) {
+            const indicator = document.getElementById('model-indicator');
+            currentModelType = modelType;
+            
+            switch(modelType) {
+                case 'llama2-lora':
+                    indicator.innerHTML = '🦙 Llama 2 + LoRA';
+                    indicator.className = 'model-badge model-llama2';
+                    break;
+                case 'gpt2':
+                    indicator.innerHTML = '🤖 GPT-2 Fine-tuned';
+                    indicator.className = 'model-badge model-gpt2';
+                    break;
+                default:
+                    indicator.innerHTML = '❌ Model Error';
+                    indicator.className = 'model-badge model-error';
+            }
+        }
+
+        // Generate text
+        document.getElementById('generate-btn').addEventListener('click', async function() {
+            const prompt = document.getElementById('prompt').value.trim();
+            const maxLength = parseInt(document.getElementById('max-length').value);
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            
+            const btn = document.getElementById('generate-btn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+            const output = document.getElementById('output');
+            const copyBtn = document.getElementById('copy-btn');
+            const generationInfo = document.getElementById('generation-info');
+            
+            // Show loading state
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline';
+            output.innerHTML = '<p class="generating">Weaving your Gothic tale...</p>';
+            copyBtn.style.display = 'none';
+            generationInfo.textContent = '';
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        max_length: maxLength,
+                        temperature: temperature
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    output.innerHTML = `<p class="generated-text">${data.text}</p>`;
+                    copyBtn.style.display = 'block';
+                    
+                    // Show generation info
+                    const modelName = data.model_type === 'llama2-lora' ? 'Llama 2 + LoRA' : 'GPT-2';
+                    generationInfo.textContent = `Generated by ${modelName}`;
+                    
+                    copyBtn.onclick = () => {
+                        navigator.clipboard.writeText(data.text);
+                        copyBtn.textContent = '✓ Copied!';
+                        setTimeout(() => copyBtn.textContent = '📋 Copy', 2000);
+                    };
+                } else {
+                    output.innerHTML = `<p class="error">Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                output.innerHTML = `<p class="error">Network error: ${error.message}</p>`;
+            } finally {
+                // Reset button state
+                btn.disabled = false;
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+            }
+        });
+
+        // Allow Enter to trigger generation (Ctrl+Enter or Cmd+Enter)
+        document.getElementById('prompt').addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                document.getElementById('generate-btn').click();
+            }
+        });
+
+        // Health check and model detection on page load
+        window.addEventListener('load', async function() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (data.model_loaded) {
+                    updateModelIndicator(data.model_type);
+                } else {
+                    updateModelIndicator('error');
+                    document.getElementById('output').innerHTML = 
+                        '<p class="error">Model not loaded. Please ensure a model has been trained first.</p>';
+                    document.getElementById('generate-btn').disabled = true;
+                }
+            } catch (error) {
+                console.warn('Health check failed:', error);
+                updateModelIndicator('error');
+            }
+        });
+    </script>
+
+    <style>
+        /* Additional styles for model indicator */
+        .model-info {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .model-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .model-llama2 {
+            background: linear-gradient(45deg, #2e7d32, #4caf50);
+            color: white;
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .model-gpt2 {
+            background: linear-gradient(45deg, #1976d2, #2196f3);
+            color: white;
+            box-shadow: 0 2px 10px rgba(33, 150, 243, 0.3);
+        }
+
+        .model-error {
+            background: linear-gradient(45deg, #d32f2f, #f44336);
+            color: white;
+            box-shadow: 0 2px 10px rgba(244, 67, 54, 0.3);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .generation-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .header-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</body>
+</html>

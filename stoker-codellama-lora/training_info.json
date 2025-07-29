@@ -1,0 +1,9 @@
+{
+  "base_model": "codellama/CodeLlama-7b-hf",
+  "method": "LoRA (Minimal)",
+  "training_chunks": 50,
+  "epochs": 1,
+  "learning_rate": 0.0005,
+  "lora_rank": 4,
+  "note": "Memory-optimized training with reduced dataset and parameters"
+}

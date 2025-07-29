@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bram Stoker Style Text Generator - Enhanced</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">🧛 Bram Stoker Style Generator</h1>
+            <p class="subtitle">Generate Gothic prose in the style of the master of Victorian horror</p>
+            
+            <!-- Model Selector Section -->
+            <div class="model-selector-section">
+                <div class="model-selector">
+                    <label for="model-select">Select Model:</label>
+                    <select id="model-select" class="model-dropdown">
+                        <option value="">Loading models...</option>
+                    </select>
+                    <button id="refresh-models" class="refresh-btn" title="Refresh available models">🔄</button>
+                </div>
+                <div class="model-info-display">
+                    <span id="model-indicator" class="model-badge">🔄 Loading...</span>
+                    <p id="model-description" class="model-description"></p>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="prompt">Enter your prompt:</label>
+                    <textarea id="prompt" rows="4" placeholder="Loading sample prompts..."></textarea>
+                    <div class="prompt-actions">
+                        <small class="hint">Start your Gothic tale, or use a sample prompt</small>
+                        <div class="sample-prompts">
+                            <button class="sample-btn" data-prompt="The ancient castle stood upon the hill, its Gothic spires piercing the storm-torn sky">🏰 Castle</button>
+                            <button class="sample-btn" data-prompt="My dear friend, I must tell you of the most peculiar events that have transpired">💌 Letter</button>
+                            <button class="sample-btn" data-prompt="The moonlight cast eerie shadows through the fog-shrouded streets">🌙 Night</button>
+                            <button class="sample-btn" data-prompt="In the depths of the ancient crypt, I discovered something that chilled my very soul">⚰️ Crypt</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="max-length">Length: <span id="length-value">200</span> words</label>
+                        <input type="range" id="max-length" min="50" max="400" value="200" step="25">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="temperature">Creativity: <span id="temp-value">0.8</span></label>
+                        <input type="range" id="temperature" min="0.3" max="1.2" value="0.8" step="0.1">
+                        <small class="temp-hint">Lower = more conservative, Higher = more creative</small>
+                    </div>
+                </div>
+
+                <button id="generate-btn" class="generate-btn">
+                    <span class="btn-text">Summon the Words</span>
+                    <span class="btn-loading" style="display: none;">Channeling Stoker's Spirit...</span>
+                </button>
+            </div>
+
+            <div class="output-section">
+                <div class="output-header">
+                    <h3>Generated Text</h3>
+                    <div class="header-actions">
+                        <span id="generation-info" class="generation-info"></span>
+                        <button id="copy-btn" class="copy-btn" style="display: none;">📋 Copy</button>
+                    </div>
+                </div>
+                <div id="output" class="output-text">
+                    <div class="placeholder">
+                        <p>🏰 Your Gothic prose will appear here...</p>
+                        <p class="placeholder-hint">Select a model above and enter a prompt, or try one of the sample prompts!</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Enhanced with multiple AI models • Trained on Bram Stoker's <em>Dracula</em></p>
+            <p class="disclaimer">Generated text is AI-created fiction inspired by public domain literature</p>
+        </footer>
+    </div>
+
+    <script>
+        let availableModels = [];
+        let currentModel = null;
+
+        // Update slider values
+        document.getElementById('max-length').addEventListener('input', function(e) {
+            document.getElementById('length-value').textContent = e.target.value;
+        });
+
+        document.getElementById('temperature').addEventListener('input', function(e) {
+            document.getElementById('temp-value').textContent = parseFloat(e.target.value).toFixed(1);
+        });
+
+        // Sample prompt buttons
+        document.querySelectorAll('.sample-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const prompt = this.getAttribute('data-prompt');
+                document.getElementById('prompt').value = prompt;
+                
+                // Visual feedback
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Load available models
+        async function loadModels() {
+            try {
+                const response = await fetch('/models');
+                const data = await response.json();
+                
+                availableModels = data.models || [];
+                currentModel = data.current_model;
+                
+                updateModelSelector();
+                updateModelIndicator();
+                
+            } catch (error) {
+                console.error('Error loading models:', error);
+                document.getElementById('model-indicator').innerHTML = '❌ Model Load Error';
+                document.getElementById('model-indicator').className = 'model-badge model-error';
+            }
+        }
+
+        // Update model selector dropdown
+        function updateModelSelector() {
+            const select = document.getElementById('model-select');
+            select.innerHTML = '';
+            
+            if (availableModels.length === 0) {
+                select.innerHTML = '<option value="">No models available</option>';
+                return;
+            }
+            
+            availableModels.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model.key;
+                option.textContent = model.name;
+                option.selected = model.active;
+                select.appendChild(option);
+            });
+        }
+
+        // Update model indicator and description
+        function updateModelIndicator() {
+            const indicator = document.getElementById('model-indicator');
+            const description = document.getElementById('model-description');
+            
+            const activeModel = availableModels.find(m => m.key === currentModel);
+            
+            if (activeModel) {
+                switch(activeModel.key) {
+                    case 'codellama':
+                        indicator.innerHTML = '🦙 Code Llama + LoRA';
+                        indicator.className = 'model-badge model-llama';
+                        break;
+                    case 'gpt2':
+                        indicator.innerHTML = '🤖 GPT-2 Fine-tuned';
+                        indicator.className = 'model-badge model-gpt2';
+                        break;
+                    default:
+                        indicator.innerHTML = `✨ ${activeModel.name}`;
+                        indicator.className = 'model-badge model-custom';
+                }
+                
+                description.textContent = `${activeModel.description} (${activeModel.context_length} tokens)`;
+                
+                // Set default prompt based on model
+                const promptField = document.getElementById('prompt');
+                if (!promptField.value.trim()) {
+                    if (activeModel.key === 'codellama') {
+                        promptField.placeholder = "The moonlight cast eerie shadows through the ancient corridors...";
+                    } else {
+                        promptField.placeholder = "The ancient castle stood upon...";
+                    }
+                }
+                
+            } else {
+                indicator.innerHTML = '❌ No Model';
+                indicator.className = 'model-badge model-error';
+                description.textContent = 'No model is currently loaded';
+            }
+        }
+
+        // Handle model selection change
+        document.getElementById('model-select').addEventListener('change', async function() {
+            const selectedModel = this.value;
+            if (!selectedModel || selectedModel === currentModel) return;
+            
+            try {
+                const response = await fetch('/switch_model', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model_key: selectedModel
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentModel = selectedModel;
+                    
+                    // Update active status in availableModels
+                    availableModels.forEach(model => {
+                        model.active = model.key === selectedModel;
+                    });
+                    
+                    updateModelIndicator();
+                    
+                    // Show success message
+                    const indicator = document.getElementById('model-indicator');
+                    const originalText = indicator.innerHTML;
+                    indicator.innerHTML = '✅ Model Switched!';
+                    setTimeout(() => {
+                        updateModelIndicator();
+                    }, 1500);
+                    
+                } else {
+                    alert('Failed to switch model: ' + data.error);
+                    // Reset selector to current model
+                    this.value = currentModel;
+                }
+                
+            } catch (error) {
+                console.error('Error switching model:', error);
+                alert('Error switching model');
+                this.value = currentModel;
+            }
+        });
+
+        // Refresh models button
+        document.getElementById('refresh-models').addEventListener('click', function() {
+            this.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 500);
+            loadModels();
+        });
+
+        // Generate text
+        document.getElementById('generate-btn').addEventListener('click', async function() {
+            const prompt = document.getElementById('prompt').value.trim();
+            const maxLength = parseInt(document.getElementById('max-length').value);
+            const temperature = parseFloat(document.getElementById('temperature').value);
+            
+            const btn = document.getElementById('generate-btn');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoading = btn.querySelector('.btn-loading');
+            const output = document.getElementById('output');
+            const copyBtn = document.getElementById('copy-btn');
+            const generationInfo = document.getElementById('generation-info');
+            
+            // Show loading state
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline';
+            output.innerHTML = '<p class="generating">Weaving your Gothic tale...</p>';
+            copyBtn.style.display = 'none';
+            generationInfo.textContent = '';
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        max_length: maxLength,
+                        temperature: temperature
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    output.innerHTML = `<p class="generated-text">${data.text}</p>`;
+                    copyBtn.style.display = 'block';
+                    
+                    // Show generation info
+                    generationInfo.textContent = `Generated by ${data.model_name}`;
+                    
+                    copyBtn.onclick = () => {
+                        navigator.clipboard.writeText(data.text);
+                        copyBtn.textContent = '✓ Copied!';
+                        setTimeout(() => copyBtn.textContent = '📋 Copy', 2000);
+                    };
+                } else {
+                    output.innerHTML = `<p class="error">Error: ${data.error}</p>`;
+                }
+            } catch (error) {
+                output.innerHTML = `<p class="error">Network error: ${error.message}</p>`;
+            } finally {
+                // Reset button state
+                btn.disabled = false;
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+            }
+        });
+
+        // Allow Enter to trigger generation (Ctrl+Enter or Cmd+Enter)
+        document.getElementById('prompt').addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                document.getElementById('generate-btn').click();
+            }
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            loadModels();
+        });
+    </script>
+
+    <style>
+        /* Additional styles for enhanced features */
+        .model-selector-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--bg-accent);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .model-selector label {
+            color: var(--accent-gold);
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .model-dropdown {
+            flex: 1;
+            max-width: 300px;
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-family: 'Crimson Text', serif;
+            font-size: 1rem;
+        }
+
+        .model-dropdown:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+        }
+
+        .refresh-btn {
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            border-color: var(--accent-gold);
+            transform: rotate(180deg);
+        }
+
+        .model-info-display {
+            text-align: center;
+        }
+
+        .model-description {
+            margin: 8px 0 0 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .model-llama {
+            background: linear-gradient(45deg, #2e7d32, #4caf50);
+            color: white;
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .model-custom {
+            background: linear-gradient(45deg, #7b1fa2, #9c27b0);
+            color: white;
+            box-shadow: 0 2px 10px rgba(156, 39, 176, 0.3);
+        }
+
+        .prompt-actions {
+            margin-top: 10px;
+        }
+
+        .sample-prompts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .sample-btn {
+            padding: 6px 12px;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            font-family: 'Crimson Text', serif;
+        }
+
+        .sample-btn:hover {
+            background: var(--accent-gold);
+            color: var(--bg-primary);
+            border-color: var(--accent-gold);
+            transform: translateY(-1px);
+        }
+
+        .placeholder {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .placeholder-hint {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .model-selector {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .model-dropdown {
+                max-width: none;
+            }
+
+            .sample-prompts {
+                justify-content: center;
+            }
+
+            .sample-btn {
+                font-size: 0.8rem;
+                padding: 5px 10px;
+            }
+        }
+    </style>
+</body>
+</html>
